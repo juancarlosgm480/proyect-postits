@@ -59,15 +59,22 @@ let posicionInicialY = 0;
 let offsetX = 0;
 let offsetY = 0;
 
-tablero.addEventListener("pointerdown", function(event) {
+let nivelZ = 1;
 
+tablero.addEventListener("pointerdown", function(event) { 
     
-    let elemento = event.target;
+    let elemento = event.target.closest(".formulario, .postit, #crearPostit");
 
-    if (elemento.classList.contains("postit" || "crearPostit")) {
+    if (elemento) {
+
         postitSeleccionado = elemento;
+
         offsetX = event.clientX - elemento.offsetLeft;
         offsetY = event.clientY - elemento.offsetTop;
+
+        nivelZ++;
+        postitSeleccionado.style.zIndex = nivelZ;
+        console.log(elemento.style.zIndex);
     }
     
     /*
@@ -92,23 +99,17 @@ tablero.addEventListener("pointermove", function(event) {
 });
 
 tablero.addEventListener("pointerup", function(event) {
-    if (postitSeleccionado !== null) {
-        let x = postitSeleccionado.offsetLeft;
-        let y = postitSeleccionado.offsetTop;
 
-        db.collection("postits").doc(postitSeleccionado.dataset.id).update({
-            coordenadaX: x,
-            coordenadaY: y
-            
-        }).then(() => {
-                
-            console.log("Post-it actualizado correctamente");
-            postitSeleccionado = null;
-            
-        }).catch((error) => {
-            console.error("Error al actualizar el post-it:", error);
-        });
-        
+    if (postitSeleccionado !== null) {
+        if (postitSeleccionado.classList.contains("postit")) {
+            let x = postitSeleccionado.offsetLeft;
+            let y = postitSeleccionado.offsetTop;
+
+            db.collection("postits").doc(postitSeleccionado.dataset.id).update({
+                coordenadaX: x,
+                coordenadaY: y
+            });
+        }
         postitSeleccionado = null;
     }
 });

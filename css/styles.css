@@ -101,6 +101,7 @@ header p {
 /* ================================================== */
 .formulario {
     display: block;
+    position: absolute;
 }
 
 .formulario label,
