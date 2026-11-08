@@ -178,18 +178,53 @@ db.collection("postits").get().then((resultado) => {
 // Función al aplicar doble click en el postit y editar el texto // preguntado a la IA: ¿Cómo puedo editar el texto de un post-it al hacer doble clic en él?
 //===============================================================================================================================================================================
 // Contenido por repasar...
-tablero.addEventListener("dblclick", function(event) {
+let ultimoToque = 0;
+let postitTocado = null;
+let inicioX = 0;
+let inicioY = 0;
 
-    let postit = event.target.closest(".postit");
+tablero.addEventListener("pointerdown", function(event) {
 
-    if (postit !== null) {
-        let nuevoTexto = prompt("Escribe el nuevo contenido:");
-        if (nuevoTexto !== null && nuevoTexto.trim() !== "") {
-            postit.textContent = nuevoTexto;
-            
-            db.collection("postits").doc(postit.dataset.id).update({
-                    texto: nuevoTexto
-                });
-        }
+    postitTocado = event.target.closest(".postit");
+
+    inicioX = event.clientX;
+    inicioY = event.clientY;
+
+});
+
+tablero.addEventListener("pointerup", function(event) {
+
+    if (event.pointerType !== "touch" || postitTocado === null) return;
+
+    let movimientoX = Math.abs(event.clientX - inicioX);
+    let movimientoY = Math.abs(event.clientY - inicioY);
+
+    if (movimientoX > 10 || movimientoY > 10) {
+        ultimoToque = 0;
+        postitTocado = null;
+        return;
     }
+
+    let tiempo = Date.now();
+
+    if (tiempo - ultimoToque < 400 && event.target.closest(".postit") === postitTocado) {
+
+        let nuevoTexto = prompt("Nuevo texto:");
+
+        if (nuevoTexto !== null && nuevoTexto.trim() !== "") {
+
+            postitTocado.textContent = nuevoTexto;
+
+            db.collection("postits").doc(postitTocado.dataset.id).update({
+                texto: nuevoTexto
+            });
+        }
+        ultimoToque = 0;
+    } 
+    else {
+        ultimoToque = tiempo;
+    }
+
+    postitTocado = null;
+
 });
