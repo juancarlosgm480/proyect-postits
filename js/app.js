@@ -179,6 +179,7 @@ db.collection("postits").get().then((resultado) => {
 //===============================================================================================================================================================================
 // Contenido por repasar...
 let ultimoToque = 0;
+let ultimoPostit = null;
 let postitTocado = null;
 let inicioX = 0;
 let inicioY = 0;
@@ -196,35 +197,60 @@ tablero.addEventListener("pointerup", function(event) {
 
     if (event.pointerType !== "touch" || postitTocado === null) return;
 
-    let movimientoX = Math.abs(event.clientX - inicioX);
-    let movimientoY = Math.abs(event.clientY - inicioY);
+    let movimiento = Math.abs(event.clientX - inicioX) + Math.abs(event.clientY - inicioY);
 
-    if (movimientoX > 10 || movimientoY > 10) {
+    if (movimiento > 10) {
         ultimoToque = 0;
-        postitTocado = null;
         return;
     }
 
     let tiempo = Date.now();
 
-    if (tiempo - ultimoToque < 400 && event.target.closest(".postit") === postitTocado) {
+    if (tiempo - ultimoToque < 400 && ultimoPostit === postitTocado) {
 
-        let nuevoTexto = prompt("Nuevo texto:");
+        let texto = prompt("Nuevo texto:");
 
-        if (nuevoTexto !== null && nuevoTexto.trim() !== "") {
+        if (texto !== null && texto.trim() !== "") {
 
-            postitTocado.textContent = nuevoTexto;
+            postitTocado.textContent = texto;
 
             db.collection("postits").doc(postitTocado.dataset.id).update({
-                texto: nuevoTexto
+                texto: texto
             });
         }
+
         ultimoToque = 0;
-    } 
-    else {
+
+    } else {
         ultimoToque = tiempo;
     }
 
+    ultimoPostit = postitTocado;
     postitTocado = null;
+
+});
+
+//====================================================
+// Función: agregar postits
+//====================================================
+const formulario = document.getElementById("formulario");
+
+formulario.addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+    let texto = document.getElementById("texto").value;
+    let color = document.getElementById("opciones").value;
+
+    db.collection("postits").add({
+        texto: texto,
+        color: color,
+        coordenadaX: 100,
+        coordenadaY: 100
+    }).then(() => { // Esto hace que al crear el objeto la página se reinicie
+
+        location.reload();
+
+    });;
 
 });
