@@ -78,9 +78,7 @@ header p {
 /* BOTÓN - importante ehh */
 /* ================================================== */
 #crearPostit {
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
+    position: absolute;
     width: 55px;
     height: 55px;
     border: none;

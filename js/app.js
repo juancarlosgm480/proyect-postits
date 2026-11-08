@@ -11,6 +11,9 @@ db.collection("postits").get().then((resultado) => {
     resultado.forEach((documento) => {
         
         const datos = documento.data();
+        if (datos.ID === "crearPostit") {
+            return;
+        }
         const postit = document.createElement("div");
         postit.dataset.id = documento.id;
 
@@ -26,6 +29,27 @@ db.collection("postits").get().then((resultado) => {
 
 }).catch((error) => {
     console.log(error);
+});
+
+//===================================
+//Cargar la posición del botón
+//===================================
+
+db.collection("postits").where("ID", "==", "crearPostit").get().then((resultado) => {
+
+    resultado.forEach((documento) => {
+
+        let datos = documento.data();
+
+        let boton = document.getElementById("crearPostit");
+
+        boton.style.left = datos.coordenadaX + "px";
+        boton.style.top = datos.coordenadaY + "px";
+
+    });
+
+}).catch((error) => {
+    console.log("Error al cargar el botón:", error);
 });
 
 let click = 0;
@@ -98,20 +122,40 @@ tablero.addEventListener("pointermove", function(event) {
     }
 });
 
-tablero.addEventListener("pointerup", function(event) {
+// Preguntado a la IA:
+// Por repasar...
+tablero.addEventListener("pointerup", function() {
 
-    if (postitSeleccionado !== null) {
-        if (postitSeleccionado.classList.contains("postit")) {
-            let x = postitSeleccionado.offsetLeft;
-            let y = postitSeleccionado.offsetTop;
+    if (postitSeleccionado === null) return;
 
-            db.collection("postits").doc(postitSeleccionado.dataset.id).update({
+    let x = postitSeleccionado.offsetLeft;
+    let y = postitSeleccionado.offsetTop;
+
+    if (postitSeleccionado.id === "crearPostit") {
+
+        db.collection("postits")
+            .where("ID", "==", "crearPostit")
+            .get()
+            .then(resultado => {
+                resultado.forEach(documento => {
+                    documento.ref.update({
+                        coordenadaX: x,
+                        coordenadaY: y
+                    });
+                });
+            });
+
+    } else {    
+        db.collection("postits")
+            .doc(postitSeleccionado.dataset.id)
+            .update({
                 coordenadaX: x,
                 coordenadaY: y
             });
-        }
-        postitSeleccionado = null;
+
     }
+
+    postitSeleccionado = null;
 });
 /*
 db.collection("postits").get().then((resultado) => {
