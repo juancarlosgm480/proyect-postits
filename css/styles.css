@@ -89,6 +89,9 @@ header p {
     color: white;
     font-size: 30px;
     cursor: pointer;
+    position: absolute;
+    touch-action: none;
+    user-select: none;
 }
 
 #crearPostit:hover {
