@@ -54,6 +54,8 @@ db.collection("postits").where("ID", "==", "crearPostit").get().then((resultado)
 
 let click = 0;
 
+//===================================
+
 function click_button() {
     const contenedor = document.querySelector('.formulario');
     click++;
@@ -175,3 +177,25 @@ db.collection("postits").get().then((resultado) => {
 
 });
 */
+
+//===================================
+// Función al aplicar doble click en el postit y editar el texto // preguntado a la IA: ¿Cómo puedo editar el texto de un post-it al hacer doble clic en él?
+//===================================
+// Contenido por repasar...
+tablero.addEventListener("dblclick", function(event) {
+
+    let postit = event.target.closest(".postit");
+
+    if (postit !== null) {
+        let nuevoTexto = prompt("Escribe el nuevo contenido:");
+        if (nuevoTexto !== null && nuevoTexto.trim() !== "") {
+            postit.textContent = nuevoTexto;
+            
+            db.collection("postits")
+                .doc(postit.dataset.id)
+                .update({
+                    texto: nuevoTexto
+                });
+        }
+    }
+});
