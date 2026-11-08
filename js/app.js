@@ -178,9 +178,9 @@ db.collection("postits").get().then((resultado) => {
 });
 */
 
-//===================================
+//===============================================================================================================================================================================
 // Función al aplicar doble click en el postit y editar el texto // preguntado a la IA: ¿Cómo puedo editar el texto de un post-it al hacer doble clic en él?
-//===================================
+//===============================================================================================================================================================================
 // Contenido por repasar...
 tablero.addEventListener("dblclick", function(event) {
 
