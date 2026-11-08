@@ -1,22 +1,27 @@
+
 //===================================
-//Obstención del tablero
+// Obtención del tablero
 //===================================
 const tablero = document.getElementById("tablero");
+
 console.log("APP.JS FUNCIONA, por fiiin!!");
 
 //===================================
-//Obstener post-its en firebase
+// Obtener post-its en Firebase
 //===================================
 db.collection("postits").get().then((resultado) => {
+
     resultado.forEach((documento) => {
-        
+
         const datos = documento.data();
+
         if (datos.ID === "crearPostit") {
             return;
         }
-        const postit = document.createElement("div");
-        postit.dataset.id = documento.id;
 
+        const postit = document.createElement("div");
+
+        postit.dataset.id = documento.id;
         postit.className = "postit " + datos.color;
         postit.textContent = datos.texto;
 
@@ -32,15 +37,13 @@ db.collection("postits").get().then((resultado) => {
 });
 
 //===================================
-//Cargar la posición del botón
+// Cargar posición del botón
 //===================================
-
 db.collection("postits").where("ID", "==", "crearPostit").get().then((resultado) => {
 
     resultado.forEach((documento) => {
 
         let datos = documento.data();
-
         let boton = document.getElementById("crearPostit");
 
         boton.style.left = datos.coordenadaX + "px";
@@ -52,80 +55,63 @@ db.collection("postits").where("ID", "==", "crearPostit").get().then((resultado)
     console.log("Error al cargar el botón:", error);
 });
 
+//===================================
+// Mostrar formulario
+//===================================
 let click = 0;
 
-//===================================
-
 function click_button() {
+
     const contenedor = document.querySelector('.formulario');
+
     click++;
 
-    if (click > 1){
+    if (click > 1) {
         click = 0;
     }
 
-    console.log(click);
-
     if (click === 1) {
-        contenedor.classList.add('modo-flex'); 
-    } 
-    else if (click === 0) {
+        contenedor.classList.add('modo-flex');
+    } else {
         contenedor.classList.remove('modo-flex');
     }
 }
 
-//====================================
-//Obtener elemento mediante pointerdown
-//====================================
+//===================================
+// Mover post-its
+//===================================
 let postitSeleccionado = null;
-
-let posicionInicialX = 0;
-let posicionInicialY = 0;
 
 let offsetX = 0;
 let offsetY = 0;
 
-let nivelZ = 1;
+// Tocar post-it
+tablero.addEventListener("pointerdown", function(event) {
 
-tablero.addEventListener("pointerdown", function(event) { 
-    
-    let elemento = event.target.closest(".formulario, .postit, #crearPostit");
+    let elemento = event.target.closest(".postit, #crearPostit");
 
-    if (elemento) {
+    if (!elemento) return;
 
-        postitSeleccionado = elemento;
+    postitSeleccionado = elemento;
 
-        offsetX = event.clientX - elemento.offsetLeft;
-        offsetY = event.clientY - elemento.offsetTop;
+    offsetX = event.clientX - elemento.offsetLeft;
+    offsetY = event.clientY - elemento.offsetTop;
 
-        nivelZ++;
-        postitSeleccionado.style.zIndex = nivelZ;
-        console.log(elemento.style.zIndex);
-    }
-    
-    /*
-    console.log("He tocado el tablero");
-    let elemento = event.target;
+    tablero.setPointerCapture(event.pointerId);
 
-    console.log(elemento);
-    */
 });
 
-//====================================
-//Mover postits con pointermove
-//====================================
+// Mover post-it
 tablero.addEventListener("pointermove", function(event) {
-    if (postitSeleccionado !== null) {
-        let x = event.clientX - offsetX;
-        let y = event.clientY - offsetY;
-        
-        postitSeleccionado.style.left = x + "px";
-        postitSeleccionado.style.top = y + "px";
-    }
+
+    if (postitSeleccionado === null) return;
+
+    postitSeleccionado.style.left = (event.clientX - offsetX) + "px";
+    postitSeleccionado.style.top = (event.clientY - offsetY) + "px";
+
 });
 
-// Preguntado a la IA:
-// Por repasar...
+// Soltar post-it y guardar posición
 tablero.addEventListener("pointerup", function() {
 
     if (postitSeleccionado === null) return;
@@ -135,49 +121,40 @@ tablero.addEventListener("pointerup", function() {
 
     if (postitSeleccionado.id === "crearPostit") {
 
-        db.collection("postits")
-            .where("ID", "==", "crearPostit").get().then(resultado => {
-                resultado.forEach(documento => {
-                    documento.ref.update({
-                        coordenadaX: x,
-                        coordenadaY: y
-                    });
+        db.collection("postits").where("ID", "==", "crearPostit").get().then(resultado => {
+
+            resultado.forEach(documento => {
+
+                documento.ref.update({
+                    coordenadaX: x,
+                    coordenadaY: y
                 });
+
             });
 
-    } else {    
+        });
+
+    } else {
+
         db.collection("postits").doc(postitSeleccionado.dataset.id).update({
-                coordenadaX: x,
-                coordenadaY: y
-            });
+            coordenadaX: x,
+            coordenadaY: y
+        });
 
     }
 
     postitSeleccionado = null;
-});
-/*
-db.collection("postits").get().then((resultado) => {
-
-    console.log("Documentos encontrados:", resultado.size);
-
-    resultado.forEach((documento) => {
-
-        console.log("Documento:", documento.id);
-        console.log("Datos:", documento.data());
-
-    });
-
-}).catch((error) => {
-
-    console.log("ERROR:", error);
 
 });
-*/
 
-//===============================================================================================================================================================================
-// Función al aplicar doble click en el postit y editar el texto // preguntado a la IA: ¿Cómo puedo editar el texto de un post-it al hacer doble clic en él?
-//===============================================================================================================================================================================
-// Contenido por repasar...
+// Si se interrumpe el movimiento
+tablero.addEventListener("pointercancel", function() {
+    postitSeleccionado = null;
+});
+
+//===================================
+// Editar post-it con doble toque
+//===================================
 let ultimoToque = 0;
 let ultimoPostit = null;
 let postitTocado = null;
@@ -201,6 +178,7 @@ tablero.addEventListener("pointerup", function(event) {
 
     if (movimiento > 10) {
         ultimoToque = 0;
+        postitTocado = null;
         return;
     }
 
@@ -217,12 +195,15 @@ tablero.addEventListener("pointerup", function(event) {
             db.collection("postits").doc(postitTocado.dataset.id).update({
                 texto: texto
             });
+
         }
 
         ultimoToque = 0;
 
     } else {
+
         ultimoToque = tiempo;
+
     }
 
     ultimoPostit = postitTocado;
@@ -230,9 +211,9 @@ tablero.addEventListener("pointerup", function(event) {
 
 });
 
-//====================================================
-// Función: agregar postits
-//====================================================
+//===================================
+// Agregar post-its
+//===================================
 const formulario = document.getElementById("formulario");
 
 formulario.addEventListener("submit", function(event) {
@@ -243,14 +224,16 @@ formulario.addEventListener("submit", function(event) {
     let color = document.getElementById("opciones").value;
 
     db.collection("postits").add({
+
         texto: texto,
         color: color,
         coordenadaX: 100,
         coordenadaY: 100
-    }).then(() => { // Esto hace que al crear el objeto la página se reinicie
+
+    }).then(() => {
 
         location.reload();
 
-    });;
+    });
 
 });
