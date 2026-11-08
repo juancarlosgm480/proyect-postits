@@ -95,6 +95,9 @@ tablero.addEventListener("pointerdown", function(event) {
 
         postitSeleccionado = elemento;
 
+        posicionInicialX = elemento.offsetLeft;
+        posicionInicialY = elemento.offsetTop;
+
         offsetX = event.clientX - elemento.offsetLeft;
         offsetY = event.clientY - elemento.offsetTop;
 
@@ -130,29 +133,60 @@ tablero.addEventListener("pointerup", function() {
 
     if (postitSeleccionado === null) return;
 
+    // Comprobar si es un post-it
+    if (postitSeleccionado.classList.contains("postit")) {
+
+        let movimientoX = postitSeleccionado.offsetLeft - posicionInicialX;
+        let movimientoY = postitSeleccionado.offsetTop - posicionInicialY;
+
+        // Detectar deslizamiento horizontal
+        if (Math.abs(movimientoX) > 80 && Math.abs(movimientoX) > Math.abs(movimientoY)) {
+
+            let confirmar = confirm("¿Quieres eliminar este post-it?");
+
+            if (confirmar) {
+
+                db.collection("postits")
+                    .doc(postitSeleccionado.dataset.id)
+                    .delete()
+                    .then(() => {
+                        postitSeleccionado.remove();
+                    })
+                    .catch(error => console.log(error));
+
+            } else {
+
+                postitSeleccionado.style.left = posicionInicialX + "px";
+                postitSeleccionado.style.top = posicionInicialY + "px";
+
+            }
+
+            postitSeleccionado = null;
+            return;
+        }
+    }
+
+    // Guardar posición
     let x = postitSeleccionado.offsetLeft;
     let y = postitSeleccionado.offsetTop;
 
     if (postitSeleccionado.id === "crearPostit") {
 
         db.collection("postits")
-            .where("ID", "==", "crearPostit").get().then(resultado => {
-                resultado.forEach(documento => {
+            .where("ID", "==", "crearPostit").get().then(resultado => {resultado.forEach(documento => {
                     documento.ref.update({
                         coordenadaX: x,
                         coordenadaY: y
                     });
                 });
             });
-
-    } else {    
+    } 
+    else {
         db.collection("postits").doc(postitSeleccionado.dataset.id).update({
-                coordenadaX: x,
-                coordenadaY: y
-            });
-
+            coordenadaX: x,
+            coordenadaY: y
+        });
     }
-
     postitSeleccionado = null;
 });
 /*
@@ -211,7 +245,7 @@ tablero.addEventListener("pointerup", function(event) {
         let texto = prompt("Nuevo texto:");
 
         if (texto !== null && texto.trim() !== "") {
-
+            
             postitTocado.textContent = texto;
 
             db.collection("postits").doc(postitTocado.dataset.id).update({
