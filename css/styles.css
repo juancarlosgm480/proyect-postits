@@ -13,22 +13,26 @@ body {
 /* Header */
 /* ================================================== */
 header {
-    padding: 25px;
+    padding: clamp(15px, 4vw, 25px);
     background-color: #4e4e4e;
     color: white;
     box-shadow: 2px 2px 20px black;
 }
 
+header h1 {
+    font-size: clamp(20px, 4vw, 30px);
+}
+
 header p {
     color: gray;
     margin-top: 5px;
+    font-size: clamp(12px, 2vw, 16px);
 }
 /* ================================================== */
 /* Tableroo */
 /* ================================================== */
 #tablero {
-    position: relative;
-    height: 85vh;
+    touch-action: none;
 }
 /* ================================================== */
 /* papeles */
@@ -40,6 +44,14 @@ header p {
     padding: 20px;
     box-shadow: 2px 3px 8px #4b4b4b;
     cursor: grab;
+    -webkit-user-select: none;
+}
+
+.postit,
+#crearPostit {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .postit p {
@@ -122,14 +134,96 @@ header p {
 .formulario.modo-flex {
     display: flex;
     background-color: lightgray;
-    width: 30%;
-    height: 70%;
+    width: auto;
+    height: auto;
     border-radius: 1em;
     position: absolute;
-    top: 10%;
-    left: 35%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: calc(100% - 30px);
+    padding: 20px;
     box-shadow: 2px 3px 20px #4b4b4b;
-    opacity: 0.7;
+    opacity: 0.9;
     z-index: 1000;
 }
 
+/* ========================================= */
+/* TABLETS */
+/* ========================================= */
+
+@media (max-width: 768px) {
+
+    header {
+        padding: 20px;
+    }
+
+    #tablero {
+        min-height: 85vh;
+        height: auto;
+    }
+
+    .postit {
+        width: 130px;
+        height: 130px;
+        padding: 15px;
+    }
+
+    .postit p {
+        font-size: 14px;
+    }
+
+}
+
+/* ========================================= */
+/* MÓVILES */
+/* ========================================= */
+
+@media (max-width: 480px) {
+
+    header {
+        padding: 15px;
+        text-align: center;
+    }
+
+    header h1 {
+        font-size: 20px;
+    }
+
+    header p {
+        font-size: 12px;
+    }
+
+    #tablero {
+        min-height: 85vh;
+        height: auto;
+        overflow: hidden;
+    }
+
+    .postit {
+        width: 110px;
+        height: 110px;
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    .postit p {
+        font-size: 12px;
+    }
+
+    #crearPostit {
+        width: 48px;
+        height: 48px;
+        font-size: 25px;
+    }
+
+    .formulario.modo-flex {
+        max-width: 90%;
+        padding: 15px;
+    }
+
+    .formulario input {
+        max-width: 100%;
+    }
+
+}
