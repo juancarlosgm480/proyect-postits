@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizarra de Post-its</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script defer src="./js/app.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <h1>Proyecto #1 - WebApp para notas</h1>
+        <p>Juan Carlos García Muñoz - Optativa-Desarrollo Full-Stack</p>
+    </header>
+
+    <main id="tablero">       
+        
+        <button id="crearPostit" onclick="click_button()"> + </button>
+        
+        <div class="formulario">
+            <div>
+            <label for="texto">Texto:</label> <br>
+            <input type="text" name="texto" value="texto">
+            <br>
+            <label for="color">color:</label> <br>
+            <select id="opciones" name="opciones">
+                <option value="amarillo">amarillo</option>
+                <option value="rosa">rosa</option>
+                <option value="verde">verde</option>
+                <option value="azul">azul</option>
+            </div>    
+        </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/13.2.0/firebase-app-compat.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBMck_SSXFChdkbr-DAovo2FUUf-3CkUSY",
+            authDomain: "post-its-a2c4e.firebaseapp.com",
+            projectId: "post-its-a2c4e",
+            storageBucket: "post-its-a2c4e.firebasestorage.app",
+            messagingSenderId: "1005354149221",
+            appId: "1:1005354149221:web:1a73a7c6be06c37e0e6d8c"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        const db = firebase.firestore();
+
+        console.log("Firebase conectado");
+    </script>
+
+</body>
+
+</html>
+
