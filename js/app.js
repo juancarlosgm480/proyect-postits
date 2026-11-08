@@ -136,9 +136,7 @@ tablero.addEventListener("pointerup", function() {
     if (postitSeleccionado.id === "crearPostit") {
 
         db.collection("postits")
-            .where("ID", "==", "crearPostit")
-            .get()
-            .then(resultado => {
+            .where("ID", "==", "crearPostit").get().then(resultado => {
                 resultado.forEach(documento => {
                     documento.ref.update({
                         coordenadaX: x,
@@ -148,9 +146,7 @@ tablero.addEventListener("pointerup", function() {
             });
 
     } else {    
-        db.collection("postits")
-            .doc(postitSeleccionado.dataset.id)
-            .update({
+        db.collection("postits").doc(postitSeleccionado.dataset.id).update({
                 coordenadaX: x,
                 coordenadaY: y
             });
@@ -191,9 +187,7 @@ tablero.addEventListener("dblclick", function(event) {
         if (nuevoTexto !== null && nuevoTexto.trim() !== "") {
             postit.textContent = nuevoTexto;
             
-            db.collection("postits")
-                .doc(postit.dataset.id)
-                .update({
+            db.collection("postits").doc(postit.dataset.id).update({
                     texto: nuevoTexto
                 });
         }

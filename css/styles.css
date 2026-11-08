@@ -100,18 +100,22 @@ header p {
 .formulario {
     display: block;
     position: absolute;
+    justify-content: center;
+    align-items: center;
 }
 
 .formulario label,
 .formulario input,
-.formulario select {
+.formulario select,
+.formulario button {
     display: none;
 }
 
 
 .formulario.modo-flex label,
 .formulario.modo-flex input,
-.formulario.modo-flex select {
+.formulario.modo-flex select,
+.formulario.modo-flex button {
     display: block;
 }
 

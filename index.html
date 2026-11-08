@@ -20,20 +20,26 @@
     <main id="tablero">       
         
         <button id="crearPostit" onclick="click_button()"> + </button>
+
         
-        <div class="formulario">
+        <form class="formulario" id="formulario">
             <div>
-            <label for="texto">Texto:</label> <br>
-            <input type="text" name="texto" value="texto">
+            <label for="texto">Texto:</label>
+            <input type="text" id="texto" name="texto">
             <br>
-            <label for="color">color:</label> <br>
-            <select id="opciones" name="opciones">
-                <option value="amarillo">amarillo</option>
-                <option value="rosa">rosa</option>
-                <option value="verde">verde</option>
-                <option value="azul">azul</option>
-            </div>    
-        </div>
+            <label for="opciones">Color:</label>
+            <select id="opciones" name="color">
+                <option value="amarillo">Amarillo</option>
+                <option value="rosa">Rosa</option>
+                <option value="verde">Verde</option>
+                <option value="azul">Azul</option>
+            </select>
+            <br>
+            <button class="boton-crear" type="submit">Crear post-it</button>
+            </div>
+        </form>
+
+        
     </main>
 
     <script src="https://www.gstatic.com/firebasejs/13.2.0/firebase-app-compat.js"></script>
